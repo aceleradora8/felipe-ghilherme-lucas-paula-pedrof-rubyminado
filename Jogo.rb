@@ -6,8 +6,8 @@ class Jogo
 
 		def initialize(x, y)
 			@campo_jogo = Campo.new(x, y)
-			
 		end
+
 		def jogada(x, y, flag)
 			if flag == "y"
 				@campo_jogo.campo[x][y] = "■".yellow
@@ -15,5 +15,5 @@ class Jogo
 				@campo_jogo.campo[x][y] = "■".black
 			end
 		end
-
+		
 end

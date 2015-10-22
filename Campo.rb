@@ -2,12 +2,15 @@ require 'colorize'
 class Campo 
 	attr_accessor :campo
 
+	# CONSTRUTOR
+	# Recebe uma coordenada (x,y) e uma indicacao de flag (y/n)
 	def initialize(x, y)
 		@bombas = x
 		@campo = gera_campo(x, y)
 		gera_bombas
 	end
 	
+	# Inicializa e retorna a variavel @campo a partir da coordenada (x,y)
 	def gera_campo(x, y)
 		campo = []
 		x.times { campo.push([]) }
@@ -17,29 +20,30 @@ class Campo
 		return campo
 	end
 
-	def mostrar_linhas()
-		@campo.length.times do |num| 
-			if num == 0
-				print "  #{num} "
-			else
-				print "#{num} "
-			end	
+	#
+	def gera_eixo_x()
+		eixo_x = " "
+		contador = 0
+		@campo.length.times do
+			num_str = " #{contador}"
+			eixo_x.concat(num_str)
+			contador += 1
 		end
-			puts ''
+			eixo_x.concat("\n")
+		print eixo_x
 	end
+	private :gera_eixo_x
 
-	def mostra_campos()
+	def mostra_campo_revelado()
 		contador_linha = 0
 		contador = 0
-		
-		mostrar_linhas
-			 
+		gera_eixo_x
 		@campo.each do |x|
 			print "#{contador_linha} "
 			contador_linha += 1
 			x.each do |y|
 				contador +=1
-				if(y == "☢")
+				if(y == "☢".red)
 					print "■ "
 				else
 					print  y + " "
@@ -52,12 +56,10 @@ class Campo
 		end
 	end
 
-	def mostra_campos_final()
+	def mostra_campo()
 		contador_linha = 0
 		contador = 0
-		
-		mostrar_linhas
-			 
+		gera_eixo_x
 		@campo.each do |x|
 			print "#{contador_linha} "
 			contador_linha += 1
@@ -85,7 +87,3 @@ class Campo
 	end
 
 end
-
-
-
-
