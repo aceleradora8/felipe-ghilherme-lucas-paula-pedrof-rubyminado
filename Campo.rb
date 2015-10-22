@@ -1,6 +1,8 @@
 require 'colorize'
+
 class Campo 
 	attr_accessor :campo
+	attr_accessor :bombas
 
 	# CONSTRUTOR
 	# Recebe uma coordenada (x,y) e uma indicacao de flag (y/n)
@@ -34,7 +36,7 @@ class Campo
 	end
 	private :gera_eixo_x
 
-	def mostra_campo_revelado()
+	def mostra_campo()
 		contador_linha = 0
 		contador = 0
 		gera_eixo_x
@@ -56,7 +58,7 @@ class Campo
 		end
 	end
 
-	def mostra_campo()
+	def mostra_campo_revelado()
 		contador_linha = 0
 		contador = 0
 		gera_eixo_x
@@ -64,6 +66,8 @@ class Campo
 			print "#{contador_linha} "
 			contador_linha += 1
 			x.each do |y|
+
+
 				contador +=1
 				print  y + " "
 				if contador == x.length

@@ -9,9 +9,13 @@ y = gets.to_i
 
 jogo = Jogo.new(x, y)
 
-jogo.campo_jogo.mostra_campo()
+jogo.campo_jogo.mostra_campo_revelado
 
-while true do
+jogo.campo_jogo.mostra_campo
+
+
+
+while true
 	puts "Digite a coordenada da jogada (x):"
 	coord_x = gets.to_i
 	puts "Digite a coordenada da jogada (y):"
@@ -19,10 +23,14 @@ while true do
 	puts "E flag? (y/n)"
 	flag = gets.chomp
 
+	if jogo.verifica_parametros(coord_x, coord_y, flag)
+		jogo.jogada(coord_x, coord_y, flag)
+	end
 
-
-	jogo.jogada(coord_x, coord_y, flag)
-	jogo.campo_jogo.mostra_campo()
+	if jogo.resultado == 1 or jogo.resultado == 2
+		break
+	else
+		jogo.campo_jogo.mostra_campo
+	end
 end
 
-jogo.campo_jogo.mostra_campo()
