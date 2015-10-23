@@ -9,11 +9,8 @@ y = gets.to_i
 
 jogo = Jogo.new(x, y)
 
-jogo.campo_jogo.mostra_campo_revelado
-
-jogo.campo_jogo.mostra_campo
-
-
+system("clear")
+puts jogo.campo.campo_oculto_str() # printa campo no terminal
 
 while true
 	puts "Digite a coordenada da jogada (x):"
@@ -30,7 +27,7 @@ while true
 	if jogo.resultado == 1 or jogo.resultado == 2
 		break
 	else
-		jogo.campo_jogo.mostra_campo
+		system("clear")
+		puts jogo.campo.campo_oculto_str()
 	end
 end
-
