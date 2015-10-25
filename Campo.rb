@@ -1,93 +1,88 @@
 require 'colorize'
-
+# matriz = [["l0c0","l1c1", l1]]
 class Campo 
-	attr_accessor :array_bombas # array de coordenadas bombasticas
-	attr_accessor :matriz
-
-	# CONSTRUTOR
-	# 
+	attr_reader :array_bombas				# array de coordenadas das bombas
+	attr_reader :array_bandeiras	# array de coordenadas das bandeiras
+	attr_reader :matriz						# matriz de representação do campo
+ 
+ 	# construtor
 	def initialize(num_linhas, num_colunas)
+		@bomba_figura = "B"
+		@celula_figura = "#"
+		@bandeira_figura = "F"
+		@num_bombas = (num_linhas * num_colunas) / 3
 		@array_bombas = []
-		@matriz = []
-		gera_campo!(num_linhas, num_colunas)
+		@array_bandeiras = []
+		@matriz = Array.new(num_linhas) { Array.new(num_colunas) }
+		gera_campo!
 	end
 	
-	# 
-	def gera_campo!(num_linhas, num_colunas)
-		num_colunas.times { @matriz.push([]) } # [[],[],[],[]]
-		pos = 0
-		@matriz.each do |coluna|
-			while pos < num_linhas
-				coluna.push("#")
-				pos += pos
+	# inicializa a matriz do jogo
+	def gera_campo!()
+		for i in 0..@matriz.length-1 do
+			for j in 0..@matriz[i].length-1 do
+				@matriz[i][j] = @celula_figura
 			end
 		end
-		gera_bombas!()
+		gera_bombas!
 	end
 
+	# popula a matriz com as bombas 
 	def gera_bombas!()
-		linha = Random.rand(@matriz.length)
-		coluna = Random.rand(@matriz.length)
-		array = [linha, coluna]
-		cont = 0
-
-		while cont < linha do
-			unless array_bombas.include? array
-				array_bombas.push(array)
-				cont += cont
+		bombas_criadas = 0
+		while bombas_criadas < @num_bombas do
+			bomba_linha = Random.rand(@matriz.length)
+			bomba_coluna = Random.rand(@matriz[0].length)
+			coord_bomba = [bomba_linha, bomba_coluna]
+			unless @array_bombas.include?(coord_bomba)
+				@array_bombas.push(coord_bomba)
+				@matriz[bomba_linha][bomba_coluna] = @bomba_figura
+				bombas_criadas += 1
 			end
 		end
-
-		@matriz.each do |pares|
-			linha = pares[0]
-			coluna = pares[1]
-			@matriz[linha][coluna] = "B"
-		end
-
 	end
 
-	#
-	def index_colunas_str()
-		index_colunas = " "
-		contador = 0
-		@matriz.length.times do
-			index_colunas.concat(" #{contador}")
-			contador += 1
+	# escreve o valor de marcacao na a posicao (linha,coluna) da matriz
+	# A FAZER: algoritmo de encadeamento (provalvemente vai nesse metodo)
+	def marca_campo!(marcacao, linha, coluna)
+		if marcacao == @bandeira_figura
+			@array_bandeiras.push([linha, coluna])
+		else
+			@matriz[linha][coluna] = marcacao
 		end
-		return index_colunas
 	end
-	private :index_colunas_str
 
+	# retorna uma String formatada do campo com as bombas ocultadas
 	def campo_oculto_str()
-		campo_str = index_colunas_str()
-		index_linhas = 0
-		bomba = "☢".red
-		celula_oculta = "■ "
-		@matriz.each do |coluna|
-			campo_str.concat("\n#{index_linhas} ")
-			index_linhas += 1
-			coluna.each do |celula|
-				if(celula == bomba)
-					campo_str.concat(celula_oculta)
-				else
-					campo_str.concat(celula)
-				end
+		matriz_str = " "
+		for i in 0..@matriz[0].length-1 do
+			matriz_str += " #{i}"
+		end
+
+		for i in 0..@matriz.length-1 do
+			matriz_str += "\n#{i} "
+			for j in 0..@matriz[i].length-1 do
+				celula = matriz[i][j]
+				matriz_str += (celula == @bomba_figura ? "#{@celula_figura} " : "#{celula} ")
 			end
 		end
-		return campo_str
+		return matriz_str
 	end
 
+	# retorna uma String formatada do campo com as bombas reveladas
 	def campo_revelado_str()
-		campo_str = index_colunas_str()
-		index_linhas = 0
-		@matriz.each do |coluna|
-			campo_str.concat("\n#{index_linha} ")
-			index_linha += 1
-			coluna.each do |celula|
-				campo_str.concat(celula)
+		matriz_str = " "
+		for i in 0..@matriz[0].length-1 do
+			matriz_str += " #{i}"
+		end
+
+		for i in 0..@matriz.length-1 do
+			matriz_str += "\n#{i} "
+			for j in 0..@matriz[i].length-1 do
+				matriz_str += "#{@matriz[i][j]} "
 			end
 		end
-		return campo_str
+		return matriz_str
 	end
 
 end
