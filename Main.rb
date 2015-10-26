@@ -2,28 +2,25 @@ require 'colorize'
 load "Campo.rb"
 load "Jogo.rb"
 
-puts "Digite o número de linhas do campo: " 
-num_lin = gets.to_i
-puts "Digite o número de colunas do campo: " 
-num_col = gets.to_i
+puts "Digite o tamanho do campo Ex.: [1 2]: "
+	comandos = gets.chomp.split(" ")
+	num_lins = comandos[0].to_i
+	num_cols = comandos[1].to_i
 
-jogo = Jogo.new(num_lin, num_col)
-
+jogo = Jogo.new(num_lins, num_cols)
 system("clear")
-puts jogo.campo.campo_revelado_str() # printa campo no terminal
 
 while true
-	puts "Digite o índice da linha: "
-	linha = gets.to_i
-	puts "Digite o índice da coluna:"
-	coluna = gets.to_i
-	puts "E flag? (y/n)"
-	flag = gets.chomp
+	puts jogo.campo.campo_revelado_str()
 
-	system("clear")
+	puts "Digite a jogada Ex.: [1 2 y]: "
+	comandos = gets.chomp
+	linha = comandos[0].to_i
+	coluna = comandos[2].to_i
+	flag = comandos[4]
+
 	if jogo.valida_parametros(linha, coluna, flag) == 1
 		jogada = jogo.jogada!(linha, coluna, flag)
-		puts jogo.campo.campo_oculto_str
 		case jogada
 		when 0
 			puts "Jogada invalida!"

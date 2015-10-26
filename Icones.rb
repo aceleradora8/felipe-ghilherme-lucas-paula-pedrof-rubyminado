@@ -1,15 +1,9 @@
 require 'colorize'
-
 class Icones
 
-	attr_accessor :hash
-
-		def initialize() 
-			@hash = { "BOMBA" => "☢", "CELULA" => "■ ", "BANDEIRA" => "■ b", "CELULA_ABERTA" => "■ a" }
-		end
-
-		def pega(str)
-			return @hash[str]
-		end
+	BOMBA ||= "B".red
+	CELULA ||= "#"
+	BANDEIRA ||= "F".yellow
+	CELULA_ABERTA ||= "A".black
 
 end

@@ -1,5 +1,6 @@
 require 'colorize'
 load "Campo.rb"
+load "Icones.rb"
 
 class Jogo
 
@@ -7,24 +8,21 @@ class Jogo
 
 	# construtor
 	def initialize(linhas, colunas)
-		@aberto_figura = "A"
-		@bomba_figura = "B"
-		@bandeira_figura = "F"
 		@campo = Campo.new(linhas, colunas)
 	end
 
 	# executa uma jogada (altera @campo)
 	# retorna 0 (jogada invalida) 1 (jogo nao acabou) 2 (venceu) 3 (perdeu)
 	def jogada!(linha, coluna, flag)
-		eh_aberto = @campo.matriz[linha][coluna] == @aberto_figura
-		eh_bomba = @campo.matriz[linha][coluna] == @bomba_figura
-		eh_flag = @campo.matriz[linha][coluna] == @bandeira_figura
+		eh_aberto = @campo.matriz[linha][coluna] == Icones::CELULA_ABERTA
+		eh_bomba = @campo.matriz[linha][coluna] == Icones::BOMBA
+		eh_flag = @campo.array_bandeiras.include?([linha, coluna])
 		if flag == "y" # jogada eh flag
-			unless eh_aberto
-				@campo.marca_campo!(@bandeira_figura, linha, coluna)
-				return 1
-			else
+			if eh_aberto
 				return 0
+			else
+				@campo.marca_campo!(Icones::BANDEIRA, linha, coluna)
+				return 1
 			end
 		else # jogada nao eh flag
 			if eh_bomba
@@ -32,7 +30,7 @@ class Jogo
 			elsif eh_flag or eh_aberto
 				return 0
 			else # jogada normal
-				@campo.marca_campo!(@aberto_figura, linha, coluna)
+				@campo.marca_campo!(Icones::CELULA_ABERTA, linha, coluna)
 				return 1
 			end
 		end
@@ -41,8 +39,7 @@ class Jogo
 	# valida parametros do teclado
 	# Retorna 0 (invalido) ou 1 (valido)
 	def valida_parametros(linha, coluna, flag)
-		validacao = (linha >= @campo.matriz[0].length or coluna >= @campo.matriz.length or (flag != "y" and flag != "n") ? 0 : 1)
-		return validacao
+		return (linha >= @campo.matriz[0].length || coluna >= @campo.matriz.length || (flag != "y" && flag != "n") ? 0 : 1)
 	end
 
 end
