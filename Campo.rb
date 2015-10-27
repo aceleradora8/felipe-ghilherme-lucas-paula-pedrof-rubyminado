@@ -1,15 +1,13 @@
 require 'colorize'
 load 'Icones.rb'
 
-# matriz = [["l0c0","l1c1", l1]]
 class Campo 
 	attr_reader :array_bombas				# array de coordenadas das bombas
 	attr_reader :array_bandeiras	# array de coordenadas das bandeiras
 	attr_accessor :matriz						# matriz de representação do campo
  
- 	# construtor
 	def initialize(num_linhas, num_colunas)
-		@num_bombas = (num_linhas * num_colunas) / 8
+		@num_bombas = (num_linhas * num_colunas) / 3
 		@array_bombas = []
 		@array_bandeiras = []
 		@matriz = Array.new(num_linhas) { Array.new(num_colunas) }
@@ -24,7 +22,6 @@ class Campo
 			end
 		end
 		gera_bombas!
-		gera_numeros!
 	end
 
 	# popula a matriz com as bombas 
@@ -48,44 +45,52 @@ class Campo
 		if marcacao == Icones::BANDEIRA
 			@array_bandeiras.push([linha, coluna])
 		else
-			@matriz[linha][coluna] = marcacao
+			numero_celula = gera_numero_celula(linha, coluna) # 2
+			if(numero_celula > 0)
+				@matriz[linha][coluna] = numero_celula.to_s
+			else
+				#revela_em_massa!(linha, coluna)
+			end
 		end
 	end
 
-	def gera_numeros!()
-		for x in 0..@matriz.length-1 do
-			for y in 0..@matriz[0].length-1 do
-				num_bombas = 0
-				unless(@matriz[x][y] == Icones::BOMBA)
-					if y-1 >= 0
-						num_bombas += 1 if @matriz[x][y-1] == Icones::BOMBA
-					end
-					if x-1 >= 0
-						num_bombas += 1 if @matriz[x-1][y] == Icones::BOMBA
-					end
-					if y-1 >=0 && x-1 >= 0
-						num_bombas += 1 if @matriz[x-1][y-1] == Icones::BOMBA
-					end
-					if y+1 < @matriz[0].length && x+1 < @matriz.length
-						num_bombas += 1 if @matriz[x+1][y+1] == Icones::BOMBA
-					end
-					if x-1 >= 0 && y+1 < @matriz[0].length
-						num_bombas += 1 if @matriz[x-1][y+1] == Icones::BOMBA
-					end
-					if y+1 < @matriz[0].length
-						num_bombas += 1 if @matriz[x][y+1] == Icones::BOMBA
-					end
-					if x+1 < @matriz.length && y-1 >= 0
-						num_bombas += 1 if @matriz[x+1][y-1] == Icones::BOMBA
-					end
-					if x+1 < @matriz.length
-						num_bombas += 1 if @matriz[x+1][y] == Icones::BOMBA
-					end
-					@matriz[x][y] = num_bombas.to_s if num_bombas != 0
-				end # fim unless
-			end # fim for y
-		end # fim for x
-	end # fim do metodo
+	def revela_em_massa!(linha, coluna)
+		indice_bombas_celula = gera_numero_celula(linha, coluna)
+		if meu_numero == 0
+			@matriz[linha][coluna] == Icones::CELULA_ABERTA
+			# recursao 8x
+		end
+	end
+
+	def gera_indice_bombas_celula(linha, coluna)
+		num_bombas = 0
+		unless(@matriz[linha][coluna] == Icones::BOMBA)
+			if coluna-1 >= 0 && @matriz[linha][coluna-1] == Icones::BOMBA
+				num_bombas += 1
+			end
+			if linha-1 >= 0 && @matriz[linha-1][coluna] == Icones::BOMBA
+				num_bombas += 1 
+			end
+			if coluna-1 >=0 && linha-1 >= 0 && @matriz[linha-1][coluna-1] == Icones::BOMBA
+				num_bombas += 1 end
+			if coluna+1 < @matriz[0].length && linha+1 < @matriz.length && @matriz[linha+1][coluna+1] == Icones::BOMBA
+				num_bombas += 1
+			end
+			if linha-1 >= 0 && coluna+1 < @matriz[0].length && @matriz[linha-1][coluna+1] == Icones::BOMBA
+				num_bombas += 1
+			end
+			if coluna+1 < @matriz[0].length && @matriz[linha][coluna+1] == Icones::BOMBA
+				num_bombas += 1
+			end
+			if linha+1 < @matriz.length && coluna-1 >= 0 && @matriz[linha+1][coluna-1] == Icones::BOMBA
+				num_bombas += 1
+			end
+			if linha+1 < @matriz.length && @matriz[linha+1][coluna] == Icones::BOMBA
+				num_bombas += 1
+			end
+		end
+		return num_bombas
+	end
 
 	# retorna uma String formatada do campo com as bombas ocultadas
 	def campo_oculto_str()
@@ -95,16 +100,13 @@ class Campo
 		end
 
 		for i in 0..@matriz.length-1 do
-			matriz_str += "\n#{i}"
+			matriz_str += "\n#{i} "
 			for j in 0..@matriz[i].length-1 do
 				celula = matriz[i][j]
-				if celula == Icones::BOMBA
-					matriz_str += "#{Icones::CELULA} "
-				elsif @array_bandeiras.include?([i,j])
+				if @array_bandeiras.include?([i,j])
 					matriz_str += "#{Icones::BANDEIRA} "
 				else
-					matriz_str += "#{celula} "
-				#matriz_str += (celula == Icones::BOMBA ? "#{Icones::CELULA}" : "#{celula}")
+					matriz_str += (celula == Icones::BOMBA ? "# " : "#{celula} ")
 				end
 			end
 		end
@@ -122,7 +124,6 @@ class Campo
 			matriz_str += "\n#{i} "
 			for j in 0..@matriz[i].length-1 do
 				matriz_str += (array_bandeiras.include?([i,j]) ? "#{Icones::BANDEIRA} " : "#{matriz[i][j]} ")
-				#matriz_str += "#{@matriz[i][j]} "
 			end
 		end
 		return matriz_str

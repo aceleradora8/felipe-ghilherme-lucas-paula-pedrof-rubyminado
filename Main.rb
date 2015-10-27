@@ -8,10 +8,11 @@ puts "Digite o tamanho do campo Ex.: [1 2]: "
 	num_cols = comandos[1].to_i
 
 jogo = Jogo.new(num_lins, num_cols)
-system("clear")
 
 while true
+	system("clear")
 	puts jogo.campo.campo_revelado_str()
+	puts jogo.campo.campo_oculto_str()
 
 	puts "Digite a jogada Ex.: [1 2 y]: "
 	comandos = gets.chomp
