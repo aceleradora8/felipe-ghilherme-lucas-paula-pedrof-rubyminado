@@ -6,40 +6,37 @@ class Jogo
 
 	attr_reader :campo
 
-	# construtor
-	def initialize(linhas, colunas)
-		@campo = Campo.new(linhas, colunas)
+	def initialize(num_linhas, num_colunas)
+		@campo = Campo.new(num_linhas, num_colunas)
 	end
 
 	# executa uma jogada (altera @campo)
 	# retorna 0 (jogada invalida) 1 (jogo nao acabou) 2 (venceu) 3 (perdeu)
 	def jogada!(linha, coluna, flag)
+		resposta = 0
 		eh_aberto = @campo.matriz[linha][coluna] == Icones::CELULA_ABERTA
 		eh_bomba = @campo.matriz[linha][coluna] == Icones::BOMBA
 		eh_flag = @campo.array_bandeiras.include?([linha, coluna])
 		if flag == "y" # jogada eh flag
-			if eh_aberto
-				return 0
-			else
+			unless eh_aberto
 				@campo.marca_campo!(Icones::BANDEIRA, linha, coluna)
-				return 1
+				resposta = 1
 			end
 		else # jogada nao eh flag
 			if eh_bomba
-				return 3
-			elsif eh_flag or eh_aberto
-				return 0
+				resposta = 3
 			else # jogada normal
-				@campo.marca_campo!(Icones::CELULA_ABERTA, linha, coluna)
-				return 1
+				resposta = (eh_flag || eh_aberto ? 0 : 1)
+				@campo.marca_campo!(Icones::CELULA_ABERTA, linha, coluna) if resposta == 1
 			end
 		end
+		return resposta
 	end
 
 	# valida parametros do teclado
 	# Retorna 0 (invalido) ou 1 (valido)
-	def valida_parametros(linha, coluna, flag)
-		return (linha >= @campo.matriz[0].length || coluna >= @campo.matriz.length || (flag != "y" && flag != "n") ? 0 : 1)
-	end
+	#def valida_parametros(coord_linha, coord_coluna, flag)
+	#	return (coord_linha >= 0 && coord_linha < @campo.matriz.length) && (coord_coluna >= 0 && coord_coluna < @campo.matriz[0].length) && (flag == "y" || flag == "n") ? 1 : 0
+	#end
 
 end

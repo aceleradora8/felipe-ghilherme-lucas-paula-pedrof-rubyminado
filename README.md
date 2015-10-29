@@ -13,5 +13,7 @@ RubyMinado é um jogo baseado no famoso "Campo Minado" (ou Minesweeper) feito em
 
 ## Considerações
 
-Projeto feito durante período de estudos de Ruby da turma 8 da Aceleradora Ágil da ThoughtWorks, Rubiteam, 2015.
-Contribuidores: Felipe Rodrigues (@feliperdius) Paula Bol (@pauladbol) e Pedro Fontoura (@pedrofontoura)
+Projeto realizado durante período de estudos de Ruby da turma 8 da Aceleradora Ágil da ThoughtWorks, Rubiteam, 2015.
+
+Contribuidores: Felipe Rodrigues ([https://github.com/feliperdius](@feliperdius)), Paula Bol ([https://github.com/pauladbol](@pauladbol)) e Pedro Fontoura ([https://github.com/pedrofontoura](@pedrofontoura)
+)

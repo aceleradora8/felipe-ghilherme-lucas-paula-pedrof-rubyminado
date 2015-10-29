@@ -7,89 +7,100 @@ class Campo
 	attr_accessor :matriz						# matriz de representação do campo
  
 	def initialize(num_linhas, num_colunas)
-		@num_bombas = (num_linhas * num_colunas) / 3
-		@array_bombas = []
+		total_bombas = (num_linhas * num_colunas) / 8
+		@array_bombas = cria_array_bombas(total_bombas, num_linhas, num_colunas)
 		@array_bandeiras = []
-		@matriz = Array.new(num_linhas) { Array.new(num_colunas) }
-		gera_campo!
+		@matriz = cria_matriz(num_linhas, num_colunas)
 	end
 	
 	# inicializa a matriz do jogo
-	def gera_campo!()
-		for i in 0..@matriz.length-1 do
-			for j in 0..@matriz[i].length-1 do
-				@matriz[i][j] = Icones::CELULA
+	def cria_matriz(num_linhas, num_colunas)
+		matriz = Array.new(num_linhas) { Array.new(num_colunas) }
+		for i in 0..matriz.length-1 do
+			for j in 0..matriz[i].length-1 do
+				matriz[i][j] = @array_bombas.include?([i,j]) ? Icones::BOMBA : Icones::CELULA
 			end
 		end
-		gera_bombas!
+		return matriz
 	end
 
-	# popula a matriz com as bombas 
-	def gera_bombas!()
+	# cria um array com as coordenadas das bombas
+	def cria_array_bombas(total_bombas, num_linhas, num_colunas)
+		array_bombas = Array.new(total_bombas)
 		bombas_criadas = 0
-		while bombas_criadas < @num_bombas do
-			bomba_linha = Random.rand(@matriz.length)
-			bomba_coluna = Random.rand(@matriz[0].length)
+		while bombas_criadas < total_bombas do
+			bomba_linha = Random.rand(num_linhas)
+			bomba_coluna = Random.rand(num_colunas)
 			coord_bomba = [bomba_linha, bomba_coluna]
-			unless @array_bombas.include?(coord_bomba)
-				@array_bombas.push(coord_bomba)
-				@matriz[bomba_linha][bomba_coluna] = Icones::BOMBA
+			unless array_bombas.include?(coord_bomba)
+				array_bombas.push(coord_bomba)
 				bombas_criadas += 1
 			end
 		end
+		return array_bombas
 	end
 
-	# escreve o valor de marcacao na a posicao (linha,coluna) da matriz
-	# A FAZER: algoritmo de encadeamento (provalvemente vai nesse metodo)
+	# escreve o valor de marcacao na a coordenada (linha,coluna) da matriz
 	def marca_campo!(marcacao, linha, coluna)
 		if marcacao == Icones::BANDEIRA
 			@array_bandeiras.push([linha, coluna])
 		else
-			numero_celula = gera_numero_celula(linha, coluna) # 2
+			numero_celula = gera_indice_celula(linha, coluna) # 2
 			if(numero_celula > 0)
 				@matriz[linha][coluna] = numero_celula.to_s
 			else
+				@matriz[linha][coluna] = Icones::CELULA_ABERTA
 				#revela_em_massa!(linha, coluna)
 			end
 		end
 	end
 
+=begin
 	def revela_em_massa!(linha, coluna)
-		indice_bombas_celula = gera_numero_celula(linha, coluna)
-		if meu_numero == 0
-			@matriz[linha][coluna] == Icones::CELULA_ABERTA
-			# recursao 8x
+		if parametros_validos?(linha, coluna)
+			indice_bombas = gera_indice_celula(linha, coluna)
+			if indice_bombas == 0
+				@matriz[linha][coluna] = Icones::CELULA_ABERTA
+				revela_em_massa!(linha, coluna-1)
+				revela_em_massa!(linha, coluna+1)
+				revela_em_massa!(linha-1, coluna)
+				revela_em_massa!(linha+1, coluna)
+				revela_em_massa!(linha-1, coluna+1)
+				revela_em_massa!(linha+1, coluna-1)
+				revela_em_massa!(linha-1, coluna+1)
+				revela_em_massa!(linha+1, coluna-1)
+			end
+		end
+	end
+=end
+
+	# retorna o numero de bombas ao redor da celula da coordenada (linha, coluna)
+	def gera_indice_celula(linha, coluna)
+		num_bombas = 0
+		unless(@matriz[linha][coluna] == Icones::BOMBA)
+			num_bombas +=1 if eh_bomba?(linha, coluna-1)
+			num_bombas +=1 if eh_bomba?(linha, coluna+1)
+			num_bombas +=1 if eh_bomba?(linha-1, coluna)
+			num_bombas +=1 if eh_bomba?(linha+1, coluna)
+			num_bombas +=1 if eh_bomba?(linha-1, coluna+1)
+			num_bombas +=1 if eh_bomba?(linha+1, coluna-1)
+			num_bombas +=1 if eh_bomba?(linha+1, coluna+1)
+			num_bombas +=1 if eh_bomba?(linha-1, coluna-1)
+		end
+		return num_bombas
+	end
+
+	# verifica se uma celula é bomba
+	def eh_bomba?(coord_linha, coord_coluna)
+		if parametros_validos?(coord_linha, coord_coluna)
+			return @matriz[coord_linha][coord_coluna] == Icones::BOMBA 
+		else 
+			return false
 		end
 	end
 
-	def gera_indice_bombas_celula(linha, coluna)
-		num_bombas = 0
-		unless(@matriz[linha][coluna] == Icones::BOMBA)
-			if coluna-1 >= 0 && @matriz[linha][coluna-1] == Icones::BOMBA
-				num_bombas += 1
-			end
-			if linha-1 >= 0 && @matriz[linha-1][coluna] == Icones::BOMBA
-				num_bombas += 1 
-			end
-			if coluna-1 >=0 && linha-1 >= 0 && @matriz[linha-1][coluna-1] == Icones::BOMBA
-				num_bombas += 1 end
-			if coluna+1 < @matriz[0].length && linha+1 < @matriz.length && @matriz[linha+1][coluna+1] == Icones::BOMBA
-				num_bombas += 1
-			end
-			if linha-1 >= 0 && coluna+1 < @matriz[0].length && @matriz[linha-1][coluna+1] == Icones::BOMBA
-				num_bombas += 1
-			end
-			if coluna+1 < @matriz[0].length && @matriz[linha][coluna+1] == Icones::BOMBA
-				num_bombas += 1
-			end
-			if linha+1 < @matriz.length && coluna-1 >= 0 && @matriz[linha+1][coluna-1] == Icones::BOMBA
-				num_bombas += 1
-			end
-			if linha+1 < @matriz.length && @matriz[linha+1][coluna] == Icones::BOMBA
-				num_bombas += 1
-			end
-		end
-		return num_bombas
+	def parametros_validos?(coord_linha, coord_coluna)
+		return (coord_linha >= 0 && coord_linha < @matriz.length) && (coord_coluna >= 0 && coord_coluna < @matriz[0].length)
 	end
 
 	# retorna uma String formatada do campo com as bombas ocultadas
@@ -123,10 +134,19 @@ class Campo
 		for i in 0..@matriz.length-1 do
 			matriz_str += "\n#{i} "
 			for j in 0..@matriz[i].length-1 do
-				matriz_str += (array_bandeiras.include?([i,j]) ? "#{Icones::BANDEIRA} " : "#{matriz[i][j]} ")
+				indice_celula = gera_indice_celula(i,j)
+				if array_bandeiras.include?([i,j])
+					matriz_str += "#{Icones::BANDEIRA} "
+				elsif indice_celula > 0
+					matriz_str += "#{indice_celula} "
+				else
+					matriz_str += "#{matriz[i][j]} "
+				end
 			end
 		end
 		return matriz_str
 	end
+
+	private :cria_matriz, :cria_array_bombas, :gera_indice_celula, :eh_bomba?
 
 end

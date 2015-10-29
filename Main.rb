@@ -12,6 +12,7 @@ jogo = Jogo.new(num_lins, num_cols)
 while true
 	system("clear")
 	puts jogo.campo.campo_revelado_str()
+	puts
 	puts jogo.campo.campo_oculto_str()
 
 	puts "Digite a jogada Ex.: [1 2 y]: "
@@ -20,20 +21,16 @@ while true
 	coluna = comandos[2].to_i
 	flag = comandos[4]
 
-	if jogo.valida_parametros(linha, coluna, flag) == 1
-		jogada = jogo.jogada!(linha, coluna, flag)
-		case jogada
-		when 0
-			puts "Jogada invalida!"
-		when 2
-			puts "Game Over. Você ganhou!"
-			break
-		when 3
-			puts "Game Over. Você perdeu!"
-			break
-		end
-	else
-		puts "Valores invalidos!"
+	jogada = jogo.jogada!(linha, coluna, flag)
+	case jogada
+	when 0
+		puts "Jogada invalida!"
+	when 2
+		puts "Game Over. Você ganhou!"
+		break
+	when 3
+		puts "Game Over. Você perdeu!"
+		break
 	end
 
 end
